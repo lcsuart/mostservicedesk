@@ -1,6 +1,7 @@
 <?php
 
 use GlpiPlugin\Mostservicedesk\Visibility;
+use GlpiPlugin\Mostservicedesk\TicketForm;
 
 define('PLUGIN_MOSTSERVICEDESK_VERSION', '0.1.0');
 define('PLUGIN_MOSTSERVICEDESK_MIN_GLPI', '11.0.0');
@@ -17,6 +18,24 @@ function plugin_init_mostservicedesk(): void
     Plugin::registerClass('GlpiPlugin\\Mostservicedesk\\DepartmentUser');
     Plugin::registerClass('GlpiPlugin\\Mostservicedesk\\TicketDepartment');
     Plugin::registerClass(Visibility::class);
+    Plugin::registerClass(TicketForm::class);
+
+    $PLUGIN_HOOKS['pre_itil_info_section']['mostservicedesk'] = [
+        TicketForm::class,
+        'showDepartmentSection',
+    ];
+    $PLUGIN_HOOKS['pre_item_add']['mostservicedesk'] = [
+        Ticket::class => [TicketForm::class, 'preItemAdd'],
+    ];
+    $PLUGIN_HOOKS['item_add']['mostservicedesk'] = [
+        Ticket::class => [TicketForm::class, 'itemAdd'],
+    ];
+    $PLUGIN_HOOKS['pre_item_update']['mostservicedesk'] = [
+        Ticket::class => [TicketForm::class, 'preItemUpdate'],
+    ];
+    $PLUGIN_HOOKS['item_update']['mostservicedesk'] = [
+        Ticket::class => [TicketForm::class, 'itemUpdate'],
+    ];
 
     $PLUGIN_HOOKS['add_default_where']['mostservicedesk'] = [
         Visibility::class,
