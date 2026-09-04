@@ -2,7 +2,7 @@
 
 namespace GlpiPlugin\Mostservicedesk;
 
-use Dropdown;
+use Glpi\Application\View\TemplateRenderer;
 use Session;
 use Ticket;
 
@@ -53,36 +53,27 @@ class TicketForm
             $selected = (int) ($relation['plugin_mostservicedesk_departments_id'] ?? 0);
         }
 
-        echo '<section class="accordion-item" aria-label="Departamento responsável">';
-        echo '<h2 class="accordion-header" id="mostservicedesk-department-heading">';
-        echo '<button class="accordion-button" type="button" data-bs-toggle="collapse" ';
-        echo 'data-bs-target="#mostservicedesk-department-content" aria-expanded="true" ';
-        echo 'aria-controls="mostservicedesk-department-content">';
-        echo '<i class="ti ti-building-community me-1"></i>';
-        echo '<span class="item-title">Departamento responsável</span>';
-        echo '</button></h2>';
-        echo '<div id="mostservicedesk-department-content" class="accordion-collapse collapse show" ';
-        echo 'aria-labelledby="mostservicedesk-department-heading">';
-        echo '<div class="accordion-body">';
-        echo '<label class="form-label" for="' . self::FIELD_NAME . '">';
-        echo 'Selecione o departamento que receberá o chamado ';
-        echo '<span class="text-danger" aria-label="obrigatório">*</span>';
-        echo '</label>';
+        $choices = [0 => 'Selecione um departamento'] + $departments;
 
-        if ($departments === []) {
-            echo '<div class="alert alert-warning mb-0">';
-            echo 'Nenhum departamento ativo para abertura de chamados.';
-            echo '</div>';
-        } else {
-            Dropdown::showFromArray(self::FIELD_NAME, $departments, [
-                'value' => $selected,
-                'display_emptychoice' => true,
-                'emptylabel' => 'Selecione um departamento',
-                'width' => '100%',
-            ]);
-        }
-
-        echo '</div></div></section>';
+        echo TemplateRenderer::getInstance()->renderFromStringTemplate(
+            <<<'TWIG'
+{% import 'components/form/fields_macros.html.twig' as fields %}
+{{ fields.dropdownArrayField(
+    field_name,
+    selected,
+    departments,
+    'Departamento',
+    {
+        required: true
+    }
+) }}
+TWIG,
+            [
+                'field_name' => self::FIELD_NAME,
+                'selected' => $selected,
+                'departments' => $choices,
+            ]
+        );
     }
 
     public static function preItemAdd(Ticket $ticket): void
