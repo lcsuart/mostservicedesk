@@ -72,7 +72,7 @@ class DepartmentUser extends CommonDBTM
 
         foreach ($iterator as $row) {
             $fullName = trim(($row['firstname'] ?? '') . ' ' . ($row['realname'] ?? ''));
-            echo '<tr><td>' . Html::clean($row['name']) . '</td><td>' . Html::clean($fullName) . '</td><td>';
+            echo '<tr><td>' . htmlspecialchars((string) $row['name'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '</td><td>' . htmlspecialchars($fullName, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '</td><td>';
             if (Session::haveRight('config', UPDATE)) {
                 $action = $CFG_GLPI['root_doc'] . '/plugins/mostservicedesk/front/departmentuser.form.php';
                 echo '<form method="post" action="' . htmlspecialchars($action, ENT_QUOTES, 'UTF-8') . '">';
