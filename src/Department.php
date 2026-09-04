@@ -11,6 +11,11 @@ class Department extends CommonDropdown
 {
     public static $rightname = 'config';
 
+    public static function canCreate(): bool
+    {
+        return static::canUpdate();
+    }
+
     public static function getTypeName($nb = 0): string
     {
         return $nb > 1 ? 'Departamentos de tickets' : 'Departamento de tickets';
