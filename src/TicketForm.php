@@ -107,17 +107,22 @@ class TicketForm
         global $DB;
 
         $departmentId = (int) ($ticket->input[self::FIELD_NAME] ?? 0);
-        $valid = $departmentId > 0 && $DB->request([
-            'COUNT' => 'count',
-            'FROM'  => Department::getTable(),
-            'WHERE' => [
-                'id' => $departmentId,
-                'is_active' => 1,
-                'tickets_enabled' => 1,
-            ],
-        ])->current();
+        $validCount = 0;
 
-        if ((int) ($valid['count'] ?? 0) === 0) {
+        if ($departmentId > 0) {
+            $result = $DB->request([
+                'COUNT' => 'count',
+                'FROM'  => Department::getTable(),
+                'WHERE' => [
+                    'id' => $departmentId,
+                    'is_active' => 1,
+                    'tickets_enabled' => 1,
+                ],
+            ])->current();
+            $validCount = (int) ($result['count'] ?? 0);
+        }
+
+        if ($validCount === 0) {
             Session::addMessageAfterRedirect(
                 'Selecione um departamento responsável válido.',
                 false,
