@@ -64,7 +64,9 @@ class TicketForm
     departments,
     'Departamento',
     {
-        required: true
+        required: true,
+        full_width: true,
+        width: '100%'
     }
 ) }}
 TWIG,
