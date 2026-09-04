@@ -11,6 +11,11 @@ class DepartmentUser extends CommonDBTM
 {
     public static $rightname = 'config';
 
+    public static function getTable($classname = null): string
+    {
+        return 'glpi_plugin_mostservicedesk_departments_users';
+    }
+
     public static function canCreate(): bool
     {
         return static::canUpdate();
