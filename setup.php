@@ -19,7 +19,8 @@ function plugin_init_mostservicedesk(): void
     Plugin::registerClass(Visibility::class);
 
     $PLUGIN_HOOKS['add_default_where']['mostservicedesk'] = [
-        Ticket::class => [Visibility::class, 'addDefaultWhere'],
+        Visibility::class,
+        'addDefaultWhere',
     ];
     $PLUGIN_HOOKS['item_can']['mostservicedesk'] = [
         Ticket::class => [Visibility::class, 'itemCan'],
