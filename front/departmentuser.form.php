@@ -1,5 +1,7 @@
 <?php
 
+include('../../../inc/includes.php');
+
 use GlpiPlugin\Mostservicedesk\DepartmentUser;
 
 Session::checkRight('config', UPDATE);
