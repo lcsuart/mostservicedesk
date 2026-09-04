@@ -11,6 +11,16 @@ class DepartmentUser extends CommonDBTM
 {
     public static $rightname = 'config';
 
+    public static function canCreate(): bool
+    {
+        return static::canUpdate();
+    }
+
+    public static function canPurge(): bool
+    {
+        return static::canUpdate();
+    }
+
     public static function showForDepartment(int $departmentId): void
     {
         global $DB, $CFG_GLPI;
@@ -22,41 +32,50 @@ class DepartmentUser extends CommonDBTM
         echo '<div class="center"><h3>Logins autorizados</h3>';
 
         if (Session::haveRight('config', UPDATE)) {
-            Html::openForm($CFG_GLPI['root_doc'] . '/plugins/mostservicedesk/front/departmentuser.form.php');
+            $action = $CFG_GLPI['root_doc'] . '/plugins/mostservicedesk/front/departmentuser.form.php';
+            echo '<form method="post" action="' . htmlspecialchars($action, ENT_QUOTES, 'UTF-8') . '">';
+            echo Html::hidden('_glpi_csrf_token', ['value' => Session::getNewCSRFToken()]);
             echo Html::hidden('plugin_mostservicedesk_departments_id', ['value' => $departmentId]);
             User::dropdown(['name' => 'users_id', 'right' => 'all']);
             echo Html::submit('Adicionar login', ['name' => 'add', 'class' => 'btn btn-primary']);
-            Html::closeForm();
+            echo '</form>';
         }
 
         echo '<table class="tab_cadre_fixe"><thead><tr><th>Login</th><th>Nome</th><th>Ação</th></tr></thead><tbody>';
         $iterator = $DB->request([
             'SELECT' => [
-                'du.id AS relation_id',
-                'u.name AS login',
-                'u.realname',
-                'u.firstname',
+                'glpi_plugin_mostservicedesk_departments_users.id AS relation_id',
+                'glpi_users.name AS login',
+                'glpi_users.realname',
+                'glpi_users.firstname',
             ],
-            'FROM' => 'glpi_plugin_mostservicedesk_departments_users AS du',
+            'FROM' => 'glpi_plugin_mostservicedesk_departments_users',
             'INNER JOIN' => [
-                'glpi_users AS u' => ['ON' => ['du' => 'users_id', 'u' => 'id']],
+                'glpi_users' => [
+                    'ON' => [
+                        'glpi_plugin_mostservicedesk_departments_users' => 'users_id',
+                        'glpi_users' => 'id',
+                    ],
+                ],
             ],
             'WHERE' => [
-                'du.plugin_mostservicedesk_departments_id' => $departmentId,
-                'du.is_active' => 1,
+                'glpi_plugin_mostservicedesk_departments_users.plugin_mostservicedesk_departments_id' => $departmentId,
+                'glpi_plugin_mostservicedesk_departments_users.is_active' => 1,
             ],
-            'ORDER' => ['u.name'],
+            'ORDER' => ['glpi_users.name'],
         ]);
 
         foreach ($iterator as $row) {
             $fullName = trim(($row['firstname'] ?? '') . ' ' . ($row['realname'] ?? ''));
             echo '<tr><td>' . Html::clean($row['login']) . '</td><td>' . Html::clean($fullName) . '</td><td>';
             if (Session::haveRight('config', UPDATE)) {
-                Html::openForm($CFG_GLPI['root_doc'] . '/plugins/mostservicedesk/front/departmentuser.form.php');
+                $action = $CFG_GLPI['root_doc'] . '/plugins/mostservicedesk/front/departmentuser.form.php';
+                echo '<form method="post" action="' . htmlspecialchars($action, ENT_QUOTES, 'UTF-8') . '">';
+                echo Html::hidden('_glpi_csrf_token', ['value' => Session::getNewCSRFToken()]);
                 echo Html::hidden('id', ['value' => (int) $row['relation_id']]);
                 echo Html::hidden('department_id', ['value' => $departmentId]);
                 echo Html::submit('Remover', ['name' => 'delete', 'class' => 'btn btn-danger']);
-                Html::closeForm();
+                echo '</form>';
             }
             echo '</td></tr>';
         }
