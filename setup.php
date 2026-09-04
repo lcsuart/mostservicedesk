@@ -1,5 +1,7 @@
 <?php
 
+use GlpiPlugin\Mostservicedesk\Visibility;
+
 define('PLUGIN_MOSTSERVICEDESK_VERSION', '0.1.0');
 define('PLUGIN_MOSTSERVICEDESK_MIN_GLPI', '11.0.0');
 define('PLUGIN_MOSTSERVICEDESK_MAX_GLPI', '11.1.0');
@@ -14,6 +16,14 @@ function plugin_init_mostservicedesk(): void
     Plugin::registerClass('GlpiPlugin\\Mostservicedesk\\Department');
     Plugin::registerClass('GlpiPlugin\\Mostservicedesk\\DepartmentUser');
     Plugin::registerClass('GlpiPlugin\\Mostservicedesk\\TicketDepartment');
+    Plugin::registerClass(Visibility::class);
+
+    $PLUGIN_HOOKS['add_default_where']['mostservicedesk'] = [
+        Ticket::class => [Visibility::class, 'addDefaultWhere'],
+    ];
+    $PLUGIN_HOOKS['item_can']['mostservicedesk'] = [
+        Ticket::class => [Visibility::class, 'itemCan'],
+    ];
 }
 
 function plugin_version_mostservicedesk(): array
