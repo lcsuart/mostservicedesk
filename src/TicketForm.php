@@ -34,8 +34,15 @@ class TicketForm
             $departments[(int) $row['id']] = (string) $row['name'];
         }
 
-        $selected = 0;
-        if ((int) $ticket->getID() > 0) {
+        $selected = (int) (
+            $params['options'][self::FIELD_NAME]
+            ?? $ticket->input[self::FIELD_NAME]
+            ?? $_POST[self::FIELD_NAME]
+            ?? $_GET[self::FIELD_NAME]
+            ?? 0
+        );
+
+        if ($selected === 0 && (int) $ticket->getID() > 0) {
             $relation = $DB->request([
                 'SELECT' => 'plugin_mostservicedesk_departments_id',
                 'FROM'   => TicketDepartment::getTable(),
