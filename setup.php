@@ -17,6 +17,11 @@ function plugin_init_mostservicedesk(): void
     Plugin::registerClass('GlpiPlugin\\Mostservicedesk\\Department');
     Plugin::registerClass('GlpiPlugin\\Mostservicedesk\\DepartmentUser');
     Plugin::registerClass('GlpiPlugin\\Mostservicedesk\\TicketDepartment');
+
+    // Aliases legados usados pelo resolvedor de itemtype da REST API v1.
+    Plugin::registerClass('PluginMostservicedeskDepartment');
+    Plugin::registerClass('PluginMostservicedeskTicketDepartment');
+
     Plugin::registerClass(Visibility::class);
     Plugin::registerClass(TicketForm::class);
 
