@@ -18,7 +18,10 @@ function plugin_init_mostservicedesk(): void
     Plugin::registerClass('GlpiPlugin\\Mostservicedesk\\DepartmentUser');
     Plugin::registerClass('GlpiPlugin\\Mostservicedesk\\TicketDepartment');
 
-    // Aliases legados usados pelo resolvedor de itemtype da REST API v1.
+    // O resolvedor REST v1 usa nomes legados e não carrega estes aliases
+    // automaticamente em plugins que usam namespace/PSR-4 no GLPI 11.
+    require_once __DIR__ . '/inc/department.class.php';
+    require_once __DIR__ . '/inc/ticketdepartment.class.php';
     Plugin::registerClass('PluginMostservicedeskDepartment');
     Plugin::registerClass('PluginMostservicedeskTicketDepartment');
 
