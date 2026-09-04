@@ -1,0 +1,86 @@
+<?php
+
+use GlpiPlugin\Mostservicedesk\Visibility;
+use GlpiPlugin\Mostservicedesk\TicketForm;
+
+define('PLUGIN_MOSTSERVICEDESK_VERSION', '0.1.0');
+define('PLUGIN_MOSTSERVICEDESK_MIN_GLPI', '11.0.0');
+define('PLUGIN_MOSTSERVICEDESK_MAX_GLPI', '11.1.0');
+
+function plugin_init_mostservicedesk(): void
+{
+    global $PLUGIN_HOOKS;
+
+    $PLUGIN_HOOKS['csrf_compliant']['mostservicedesk'] = true;
+    $PLUGIN_HOOKS['config_page']['mostservicedesk'] = 'front/department.php';
+
+    Plugin::registerClass('GlpiPlugin\\Mostservicedesk\\Department');
+    Plugin::registerClass('GlpiPlugin\\Mostservicedesk\\DepartmentUser');
+    Plugin::registerClass('GlpiPlugin\\Mostservicedesk\\TicketDepartment');
+
+    // O resolvedor REST v1 usa nomes legados e não carrega estes aliases
+    // automaticamente em plugins que usam namespace/PSR-4 no GLPI 11.
+    require_once __DIR__ . '/inc/department.class.php';
+    require_once __DIR__ . '/inc/ticketdepartment.class.php';
+    Plugin::registerClass('PluginMostservicedeskDepartment');
+    Plugin::registerClass('PluginMostservicedeskTicketDepartment');
+
+    Plugin::registerClass(Visibility::class);
+    Plugin::registerClass(TicketForm::class);
+
+    $PLUGIN_HOOKS['pre_item_form']['mostservicedesk'] = [
+        TicketForm::class,
+        'showDepartmentSection',
+    ];
+    $PLUGIN_HOOKS['pre_item_add']['mostservicedesk'] = [
+        Ticket::class => [TicketForm::class, 'preItemAdd'],
+    ];
+    $PLUGIN_HOOKS['item_add']['mostservicedesk'] = [
+        Ticket::class => [TicketForm::class, 'itemAdd'],
+    ];
+    $PLUGIN_HOOKS['pre_item_update']['mostservicedesk'] = [
+        Ticket::class => [TicketForm::class, 'preItemUpdate'],
+    ];
+    $PLUGIN_HOOKS['item_update']['mostservicedesk'] = [
+        Ticket::class => [TicketForm::class, 'itemUpdate'],
+    ];
+
+    $PLUGIN_HOOKS['add_default_where']['mostservicedesk'] = [
+        Visibility::class,
+        'addDefaultWhere',
+    ];
+    $PLUGIN_HOOKS['item_can']['mostservicedesk'] = [
+        Ticket::class => [Visibility::class, 'itemCan'],
+    ];
+}
+
+function plugin_version_mostservicedesk(): array
+{
+    return [
+        'name'         => 'Gestão de Tickets - MOST Service Desk',
+        'version'      => PLUGIN_MOSTSERVICEDESK_VERSION,
+        'author'       => 'MOST Tecnologia e Inovação',
+        'license'      => 'GPLv3+',
+        'homepage'     => '',
+        'requirements' => [
+            'glpi' => [
+                'min' => PLUGIN_MOSTSERVICEDESK_MIN_GLPI,
+                'max' => PLUGIN_MOSTSERVICEDESK_MAX_GLPI,
+            ],
+            'php' => [
+                'min' => '8.2',
+            ],
+        ],
+    ];
+}
+
+function plugin_mostservicedesk_check_prerequisites(): bool
+{
+    return version_compare(GLPI_VERSION, PLUGIN_MOSTSERVICEDESK_MIN_GLPI, '>=')
+        && version_compare(GLPI_VERSION, PLUGIN_MOSTSERVICEDESK_MAX_GLPI, '<');
+}
+
+function plugin_mostservicedesk_check_config(bool $verbose = false): bool
+{
+    return true;
+}

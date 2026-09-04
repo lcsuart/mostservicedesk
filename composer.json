@@ -1,0 +1,14 @@
+{
+  "name": "most/mostservicedesk",
+  "description": "Gestão departamental de tickets para GLPI 11",
+  "type": "glpi-plugin",
+  "license": "GPL-3.0-or-later",
+  "autoload": {
+    "psr-4": {
+      "GlpiPlugin\\Mostservicedesk\\": "src/"
+    }
+  },
+  "require": {
+    "php": ">=8.2"
+  }
+}
