@@ -21,7 +21,7 @@ if (isset($_POST['add'])) {
     Html::redirect('department.php');
 }
 
-$id = (int) ($_GET['id'] ?? 0);
+$id = isset($_GET['id']) ? (int) $_GET['id'] : -1;
 Html::header('MOST Service Desk', $_SERVER['PHP_SELF'], 'config', 'plugins');
 $department->display(['id' => $id]);
 Html::footer();
