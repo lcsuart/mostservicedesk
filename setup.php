@@ -20,7 +20,7 @@ function plugin_init_mostservicedesk(): void
     Plugin::registerClass(Visibility::class);
     Plugin::registerClass(TicketForm::class);
 
-    $PLUGIN_HOOKS['pre_itil_info_section']['mostservicedesk'] = [
+    $PLUGIN_HOOKS['pre_item_form']['mostservicedesk'] = [
         TicketForm::class,
         'showDepartmentSection',
     ];
