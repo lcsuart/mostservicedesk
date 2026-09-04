@@ -49,8 +49,8 @@ class DepartmentUser extends CommonDBTM
         echo '<table class="tab_cadre_fixe"><thead><tr><th>Login</th><th>Nome</th><th>Ação</th></tr></thead><tbody>';
         $iterator = $DB->request([
             'SELECT' => [
-                'glpi_plugin_mostservicedesk_departments_users.id AS relation_id',
-                'glpi_users.name AS login',
+                'glpi_plugin_mostservicedesk_departments_users.id',
+                'glpi_users.name',
                 'glpi_users.realname',
                 'glpi_users.firstname',
             ],
@@ -72,12 +72,12 @@ class DepartmentUser extends CommonDBTM
 
         foreach ($iterator as $row) {
             $fullName = trim(($row['firstname'] ?? '') . ' ' . ($row['realname'] ?? ''));
-            echo '<tr><td>' . Html::clean($row['login']) . '</td><td>' . Html::clean($fullName) . '</td><td>';
+            echo '<tr><td>' . Html::clean($row['name']) . '</td><td>' . Html::clean($fullName) . '</td><td>';
             if (Session::haveRight('config', UPDATE)) {
                 $action = $CFG_GLPI['root_doc'] . '/plugins/mostservicedesk/front/departmentuser.form.php';
                 echo '<form method="post" action="' . htmlspecialchars($action, ENT_QUOTES, 'UTF-8') . '">';
                 echo Html::hidden('_glpi_csrf_token', ['value' => Session::getNewCSRFToken()]);
-                echo Html::hidden('id', ['value' => (int) $row['relation_id']]);
+                echo Html::hidden('id', ['value' => (int) $row['id']]);
                 echo Html::hidden('department_id', ['value' => $departmentId]);
                 echo Html::submit('Remover', ['name' => 'delete', 'class' => 'btn btn-danger']);
                 echo '</form>';
