@@ -6,7 +6,7 @@ Session::checkRight('config', READ);
 $department = new Department();
 
 if (isset($_POST['add'])) {
-    Session::checkRight('config', CREATE);
+    Session::checkRight('config', UPDATE);
     $newId = $department->add($_POST);
     Html::redirect('department.form.php?id=' . $newId);
 } elseif (isset($_POST['update'])) {
