@@ -15,8 +15,13 @@ class Visibility
             return [$itemtype, $criteria];
         }
 
+        if (!self::isDepartmentGovernedProfile()) {
+            return [$itemtype, $criteria];
+        }
+
         $departmentIds = self::getAllowedDepartmentIds();
         if ($departmentIds === []) {
+            $criteria[] = new \QueryExpression('1 = 0');
             return [$itemtype, $criteria];
         }
 
@@ -43,8 +48,13 @@ class Visibility
             return;
         }
 
+        if (!self::isDepartmentGovernedProfile()) {
+            return;
+        }
+
         $departmentIds = self::getAllowedDepartmentIds();
         if ($departmentIds === []) {
+            $ticket->right = 0;
             return;
         }
 
@@ -65,6 +75,11 @@ class Visibility
     private static function canBypassDepartmentFilter(): bool
     {
         return Session::haveRight('config', UPDATE);
+    }
+
+    private static function isDepartmentGovernedProfile(): bool
+    {
+        return ($_SESSION['glpiactiveprofile']['interface'] ?? '') === 'central';
     }
 
     private static function getAllowedDepartmentIds(): array
